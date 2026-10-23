@@ -1,6 +1,6 @@
 # cpd-index
 
-The list of everything on `cpd.dev`, live at **[index.cpd.dev](https://index.cpd.dev)**.
+The list of everything on `cpd.dev`, live at **[cpd.dev](https://cpd.dev)**.
 
 It is one hand-written HTML file with no CSS and no JavaScript, in the spirit of [nat.org](https://nat.org). There's no build step either, since Vercel serves `index.html` as it is.
 
@@ -23,7 +23,7 @@ The `/ship` skill does steps 1 to 4 for every new subdomain it sets up.
 It compares the Cloudflare DNS zone with the links on the page. It prints any web subdomain (an `A`, `AAAA` or `CNAME` record without a leading `_` label) that has no link, and any link whose record is gone. It exits 1 when they disagree.
 
 - Needs: `CLOUDFLARE_API_TOKEN` with DNS read access to `cpd.dev`. `CLOUDFLARE_ZONE_ID` is optional; the script looks it up from the token when it is not set.
-- Ignores: `cpd.dev` itself and `index.cpd.dev` (the page does not link to itself).
+- Ignores: `cpd.dev` and `www.cpd.dev`, which serve this page (it does not link to itself).
 - Records that are not websites (email, verification) have no link, so list them as plain text under **Not websites**.
 
 ## Hosting
@@ -32,7 +32,8 @@ It compares the Cloudflare DNS zone with the links on the page. It prints any we
 | --- | --- |
 | Repo | [cpdis/cpd-index](https://github.com/cpdis/cpd-index) |
 | Hosting | Vercel project `cpd-index`, Git-connected (pushes to `main` deploy to production) |
-| DNS | Cloudflare `cpd.dev` zone: CNAME `index` → Vercel's project-specific target (not proxied) |
+| Domains | `cpd.dev` (primary) and `www.cpd.dev` (redirects to `cpd.dev`) |
+| DNS | Cloudflare `cpd.dev` zone: apex `A` → Vercel, and CNAME `www` → Vercel (both DNS only, not proxied) |
 | Firewall | Bot Protection on challenge and AI bots on deny, so `curl` gets a 429 "Security Checkpoint" while browsers load normally |
 
 ## Debug

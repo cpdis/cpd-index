@@ -15,12 +15,12 @@ api() { curl -s --fail-with-body "https://api.cloudflare.com/client/v4/$1" --hea
 # the zone ID is optional: look it up from the token when it is not set
 zone="${CLOUDFLARE_ZONE_ID:-$(api "zones?name=cpd.dev" | python3 -c "import json,sys; print(json.load(sys.stdin)['result'][0]['id'])")}"
 
-# web hosts in DNS; this page's own host is excluded (it does not link to itself)
+# web hosts in DNS; this page's own hosts (apex and www) are excluded (it does not link to itself)
 dns=$(api "zones/$zone/dns_records?per_page=500" | python3 -c "
 import json, sys
 for d in json.load(sys.stdin)['result']:
     name = d['name']
-    if d['type'] in ('A', 'AAAA', 'CNAME') and not any(l.startswith('_') for l in name.split('.')) and name not in ('cpd.dev', 'index.cpd.dev'):
+    if d['type'] in ('A', 'AAAA', 'CNAME') and not any(l.startswith('_') for l in name.split('.')) and name not in ('cpd.dev', 'www.cpd.dev'):
         print(name)" | sort -u)
 
 # hosts the page links to
